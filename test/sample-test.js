@@ -3,7 +3,26 @@ const { ethers } = require("hardhat");
 const { MerkleTree } = require('merkletreejs')
 const { keccak256 } = ethers.utils;
 
+const startSale = async (sw3, setter) => {
+  const now = Math.round(Date.now() / 1000);
+  await sw3[setter](now - 1000, now + 1000);
+}
+
+const endSale = async (sw3, setter) => {
+  const now = Math.round(Date.now() / 1000);
+  await sw3[setter](now - 2000, now - 1000);
+}
+
 describe("Sw3", function () {
+  const createSw3 = async () => {
+    const Sw3 = await ethers.getContractFactory("Sw3");
+    const sw3 = await Sw3.deploy(100, 5000);
+    await sw3.deployed();
+    return sw3;
+  }
+
+  
+
   it('should set initial values', async function () {
     const Sw3 = await ethers.getContractFactory('Sw3');
     const sw3 = await Sw3.deploy(100, 5000);
@@ -37,7 +56,7 @@ describe("Sw3", function () {
     await sw3.setPreSalePrice(30000)
     expect(await sw3.preSalePrice()).to.equal(30000);
 
-    await sw3.setPreSaleMintStarted(true);
+    await startSale(sw3, 'setPreSaleTime');
     expect(await sw3.isPreSaleOn()).to.equal(true);
 
     await sw3.setPreSaleMerkleRoot(merkleRoot);
@@ -72,7 +91,7 @@ describe("Sw3", function () {
     await sw3.setWhitelistPrice(30000)
     expect(await sw3.whitelistPrice()).to.equal(30000);
 
-    await sw3.setWhitelistMintStarted(true);
+    await startSale(sw3, 'setWhitelistSaleTime');
     expect(await sw3.isWhitelistSaleOn()).to.equal(true);
 
     await sw3.setWhitelistMerkleRoot(merkleRoot);
@@ -108,7 +127,7 @@ describe("Sw3", function () {
     await sw3.setPreSalePrice(30000)
     expect(await sw3.preSalePrice()).to.equal(30000);
 
-    await sw3.setPreSaleMintStarted(true);
+    await startSale(sw3, 'setPreSaleTime');
     expect(await sw3.isPreSaleOn()).to.equal(true);
 
     await sw3.setPreSaleMerkleRoot(merkleRoot);
@@ -139,7 +158,7 @@ describe("Sw3", function () {
     await sw3.setWhitelistPrice(50000)
     expect(await sw3.whitelistPrice()).to.equal(50000);
 
-    await sw3.setWhitelistMintStarted(true);
+    await startSale(sw3, 'setWhitelistSaleTime');
     expect(await sw3.isWhitelistSaleOn()).to.equal(true);
 
     await sw3.setWhitelistMerkleRoot(merkleRoot);
@@ -163,7 +182,7 @@ describe("Sw3", function () {
     await sw3.setPublicPrice(50000)
     expect(await sw3.publicPrice()).to.equal(50000);
 
-    await sw3.setPublicMintStarted(true);
+    await startSale(sw3, 'setPublicSaleTime');
     expect(await sw3.isPublicSaleOn()).to.equal(true);
 
     await sw3.unpause();
@@ -182,7 +201,7 @@ describe("Sw3", function () {
     await sw3.setPublicPrice(50000)
     expect(await sw3.publicPrice()).to.equal(50000);
 
-    await sw3.setPublicMintStarted(true);
+    await startSale(sw3, 'setPublicSaleTime');
     expect(await sw3.isPublicSaleOn()).to.equal(true);
 
     await sw3.unpause();
@@ -202,6 +221,148 @@ describe("Sw3", function () {
       value: ethers.utils.parseUnits('25000000', 'wei'),
     })).to.be.revertedWith('reached max supply');
   });
+
+  describe('preSaleTime', () => {
+    describe('get', () => {
+      it('should exist', async () => {
+        const sw3 = await createSw3();
+        expect(sw3.getPreSaleTime).to.be.a('function');
+      })
+
+      it('should return pair', async () => {
+        const sw3 = await createSw3();
+        const mintTime = await sw3.getPreSaleTime();
+        expect(mintTime).to.be.an('array');
+      });
+
+      it('should return setted pair', async () => {
+        const sw3 = await createSw3();
+        await sw3.setPreSaleTime(100, 200);
+        expect(await sw3.getPreSaleTime()).to.be.eql([
+          ethers.BigNumber.from(100), ethers.BigNumber.from(200)]);
+      });
+    });
+
+    describe('set', () => {
+      it('should exist', async () => {
+        const sw3 = await createSw3();
+        expect(sw3.setPreSaleTime).to.be.a('function');
+      });
+
+      it('should accept two numbers', async () => {
+        const sw3 = await createSw3();
+        await sw3.setPreSaleTime(1, 2);
+      });
+    });
+  });
+
+  describe('whitelistSaleTime', () => {
+    describe('get', () => {
+      it('should exist', async () => {
+        const sw3 = await createSw3();
+        expect(sw3.getWhitelistSaleTime).to.be.a('function');
+      })
+
+      it('should return pair', async () => {
+        const sw3 = await createSw3();
+        const mintTime = await sw3.getWhitelistSaleTime();
+        expect(mintTime).to.be.an('array');
+      });
+
+      it('should return setted pair', async () => {
+        const sw3 = await createSw3();
+        await sw3.setWhitelistSaleTime(100, 200);
+        expect(await sw3.getWhitelistSaleTime()).to.be.eql([
+          ethers.BigNumber.from(100), ethers.BigNumber.from(200)]);
+      });
+    });
+
+    describe('set', () => {
+      it('should exist', async () => {
+        const sw3 = await createSw3();
+        expect(sw3.setWhitelistSaleTime).to.be.a('function');
+      });
+
+      it('should accept two numbers', async () => {
+        const sw3 = await createSw3();
+        await sw3.setWhitelistSaleTime(1, 2);
+      });
+    });
+  });
+
+  describe('publicSaleTime', () => {
+    describe('get', () => {
+      it('should exist', async () => {
+        const sw3 = await createSw3();
+        expect(sw3.getPublicSaleTime).to.be.a('function');
+      })
+
+      it('should return pair', async () => {
+        const sw3 = await createSw3();
+        const mintTime = await sw3.getPublicSaleTime();
+        expect(mintTime).to.be.an('array');
+      });
+
+      it('should return setted pair', async () => {
+        const sw3 = await createSw3();
+        await sw3.setPublicSaleTime(100, 200);
+        expect(await sw3.getPublicSaleTime()).to.be.eql([
+          ethers.BigNumber.from(100), ethers.BigNumber.from(200)]);
+      });
+    });
+
+    describe('set', () => {
+      it('should exist', async () => {
+        const sw3 = await createSw3();
+        expect(sw3.setPublicSaleTime).to.be.a('function');
+      });
+
+      it('should accept two numbers', async () => {
+        const sw3 = await createSw3();
+        await sw3.setPublicSaleTime(1, 2);
+      });
+    });
+  });
+
+  describe('isPreSaleOn', async () => {
+    it('should return true only if time is met', async () => {
+      const sw3 = await createSw3();
+      expect(await sw3.isPreSaleOn()).to.be.false;
+
+      const now = Math.round(Date.now() / 1000);
+      await sw3.setPreSaleTime(now - 1000, now + 1000);
+      expect(await sw3.isPreSaleOn()).to.be.true;
+
+      await sw3.setPreSaleTime(now - 2000, now - 1000);
+      expect(await sw3.isPreSaleOn()).to.be.false;
+    });
+  });
+  describe('isWhitelistSaleOn', async () => {
+    it('should return true only if time is met', async () => {
+      const sw3 = await createSw3();
+      expect(await sw3.isWhitelistSaleOn()).to.be.false;
+
+      const now = Math.round(Date.now() / 1000);
+      await sw3.setWhitelistSaleTime(now - 1000, now + 1000);
+      expect(await sw3.isWhitelistSaleOn()).to.be.true;
+
+      await sw3.setWhitelistSaleTime(now - 2000, now - 1000);
+      expect(await sw3.isWhitelistSaleOn()).to.be.false;
+    });
+  });
+  describe('isPublicSaleOn', async () => {
+    it('should return true only if time is met', async () => {
+      const sw3 = await createSw3();
+      expect(await sw3.isPublicSaleOn()).to.be.false;
+
+      const now = Math.round(Date.now() / 1000);
+      await sw3.setPublicSaleTime(now - 1000, now + 1000);
+      expect(await sw3.isPublicSaleOn()).to.be.true;
+
+      await sw3.setPublicSaleTime(now - 2000, now - 1000);
+      expect(await sw3.isPublicSaleOn()).to.be.false;
+    });
+  })
 });
 
 
@@ -238,42 +399,42 @@ describe('full scenario', () => {
 
     await sw3.unpause();
 
-    await sw3.setPreSaleMintStarted(true);
+    await startSale(sw3, 'setPreSaleTime');
     expect(await sw3.isPreSaleOn()).to.equal(true);
 
     await expect(sw3.connect(preSaleWhitelisted[1]).preSaleMint(2, preSaleTree.getHexProof(keccak256(preSaleWhitelisted[1].address)), {
       value: ethers.utils.parseUnits('700000000000000000', 'wei'),
     })).not.to.be.reverted;
 
-    await sw3.setPreSaleMintStarted(false);
+    await endSale(sw3, 'setPreSaleTime');
     expect(await sw3.isPreSaleOn()).to.equal(false);
 
     await expect(sw3.connect(preSaleWhitelisted[1]).preSaleMint(2, preSaleTree.getHexProof(keccak256(preSaleWhitelisted[1].address)), {
       value: ethers.utils.parseUnits('700000000000000000', 'wei'),
     })).to.be.revertedWith('presale has not begun yet');
 
-    await sw3.setWhitelistMintStarted(true);
+    await startSale(sw3, 'setWhitelistSaleTime');
     expect(await sw3.isWhitelistSaleOn()).to.equal(true);
 
     await expect(sw3.connect(whitelisted[1]).whitelistMint(2, whitelistedTree.getHexProof(keccak256(whitelisted[1].address)), {
       value: ethers.utils.parseUnits('9000000000000000000', 'wei'),
     })).not.to.be.reverted;
 
-    await sw3.setWhitelistMintStarted(false);
+    await endSale(sw3, 'setWhitelistSaleTime');
     expect(await sw3.isWhitelistSaleOn()).to.equal(false);
 
     await expect(sw3.connect(whitelisted[1]).whitelistMint(2, whitelistedTree.getHexProof(keccak256(whitelisted[1].address)), {
       value: ethers.utils.parseUnits('9000000000000000000', 'wei'),
     })).to.be.revertedWith('whitelist sale has not begun yet')
 
-    await sw3.setPublicMintStarted(true);
+    await startSale(sw3, 'setPublicSaleTime');
     expect(await sw3.isPublicSaleOn()).to.equal(true);
 
     await expect(sw3.connect(notWhitelisted[1]).publicMint(2, {
       value: ethers.utils.parseUnits('1150000000000000000', 'wei'),
     })).not.to.be.reverted;
 
-    await sw3.setPublicMintStarted(false);
+    await endSale(sw3, 'setPublicSaleTime');
     expect(await sw3.isPublicSaleOn()).to.equal(false);
 
     await expect(sw3.connect(notWhitelisted[1]).publicMint(2, {

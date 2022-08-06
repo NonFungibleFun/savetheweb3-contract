@@ -23,12 +23,17 @@ contract Sw3 is Ownable, ERC721A, ReentrancyGuard, Pausable {
     bytes32 public whitelistRoot;
     
     uint64 public preSalePrice;
-    uint64 public whitelistPrice;
+    uint64 public whitelistPrice;   
     uint64 public publicPrice;
 
-    bool preSaleMintStarted;
-    bool whitelistMintStarted;
-    bool publicMintStarted;
+    uint256 public preSaleStartTime;
+    uint256 public preSaleEndTime;
+
+    uint256 public whitelistSaleStartTime;
+    uint256 public whitelistSaleEndTime;
+
+    uint256 public publicSaleStartTime;
+    uint256 public publicSaleEndTime;
 
     mapping(address => bool) public preSaleMinted;
     mapping(address => bool) public whitelistMinted;
@@ -52,7 +57,7 @@ contract Sw3 is Ownable, ERC721A, ReentrancyGuard, Pausable {
     
     function preSaleMint(uint256 quantity, bytes32[] memory proof) external payable callerIsUser whenNotPaused {
         uint256 price = preSalePrice * quantity;
-        require(price != 0 && preSaleMintStarted, "presale has not begun yet");
+        require(price != 0 && isPreSaleOn(), "presale has not begun yet");
         require(isValidPreSale(proof, keccak256(abi.encodePacked(msg.sender))), "not eligible for presale mint");
         require(totalSupply() + quantity <= collectionSize, "reached max supply");
         require(!preSaleMinted[msg.sender], "already minted");
@@ -64,7 +69,7 @@ contract Sw3 is Ownable, ERC721A, ReentrancyGuard, Pausable {
 
     function whitelistMint(uint256 quantity, bytes32[] memory proof) external payable callerIsUser whenNotPaused {
         uint256 price = whitelistPrice * quantity;
-        require(price != 0 && whitelistMintStarted, "whitelist sale has not begun yet");        
+        require(price != 0 && isWhitelistSaleOn(), "whitelist sale has not begun yet");        
         require(isValidWhitelist(proof, keccak256(abi.encodePacked(msg.sender))), "not eligible for whitelist mint");
         require(totalSupply() + quantity <= collectionSize, "reached max supply");
         require(!whitelistMinted[msg.sender], "already minted");
@@ -77,7 +82,7 @@ contract Sw3 is Ownable, ERC721A, ReentrancyGuard, Pausable {
 
     function publicMint(uint256 quantity) external payable callerIsUser whenNotPaused {
         require(
-            publicMintStarted,
+            isPublicSaleOn(),
             "public sale has not started yet"
         );
         require(
@@ -144,32 +149,17 @@ contract Sw3 is Ownable, ERC721A, ReentrancyGuard, Pausable {
     function unpause() public onlyOwner {
         _unpause();
     }
-
-    function setPreSaleMintStarted(bool started) external onlyOwner {
-        require(preSalePrice != 0);
-        preSaleMintStarted = started;
-    }
-
-    function setWhitelistMintStarted(bool started) external onlyOwner {
-        require(whitelistPrice != 0);
-        whitelistMintStarted = started;
-    }
-
-    function setPublicMintStarted(bool value) external onlyOwner {
-        require(publicPrice != 0);
-        publicMintStarted = value;
-    }
-
+    
     function isPreSaleOn() public view returns (bool) {
-        return preSaleMintStarted;
+        return preSaleStartTime <= block.timestamp && block.timestamp <= preSaleEndTime;
     }
 
     function isWhitelistSaleOn() public view returns (bool) {
-        return whitelistMintStarted;
+        return whitelistSaleStartTime <= block.timestamp && block.timestamp <= whitelistSaleEndTime;
     }
 
     function isPublicSaleOn() public view returns (bool) {
-        return publicMintStarted;
+        return publicSaleStartTime <= block.timestamp && block.timestamp <= publicSaleEndTime;
     }
 
     string private _baseTokenURI;
@@ -196,6 +186,33 @@ contract Sw3 is Ownable, ERC721A, ReentrancyGuard, Pausable {
 
     function setMaxPerTransactionDuringMint(uint256 maxPerTransactionDuringMint_) external onlyOwner {
         maxPerTransactionDuringMint = maxPerTransactionDuringMint_;
+    }
+
+    function getPreSaleTime() public view returns (uint256, uint256) {
+        return (preSaleStartTime, preSaleEndTime);
+    }
+
+    function setPreSaleTime(uint256 start, uint256 end) external onlyOwner {
+        preSaleStartTime = start;
+        preSaleEndTime = end;
+    }
+
+    function getWhitelistSaleTime() public view returns (uint256, uint256) {
+        return (whitelistSaleStartTime, whitelistSaleEndTime);
+    }
+
+    function setWhitelistSaleTime(uint256 start, uint256 end) external onlyOwner {
+        whitelistSaleStartTime = start;
+        whitelistSaleEndTime = end;
+    }
+
+    function getPublicSaleTime() public view returns (uint256, uint256) {
+        return (publicSaleStartTime, publicSaleEndTime);
+    }
+
+    function setPublicSaleTime(uint256 start, uint256 end) external onlyOwner {
+        publicSaleStartTime = start;
+        publicSaleEndTime = end;
     }
 }
 

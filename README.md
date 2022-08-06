@@ -16,6 +16,6 @@ npx hardhat help
 
 ```
 // to deploy to testnet
-npx hardhat run --network goerli scripts/sample-script.js
+npx hardhat run --network goerli scripts/deploy.js
 npx hardhat verify --network goerli <<DEPLOYED_CONTRACT_ADDRESS>> 100 5000
 ```

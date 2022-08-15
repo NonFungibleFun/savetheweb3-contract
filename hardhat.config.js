@@ -3,11 +3,18 @@ require("@nomiclabs/hardhat-etherscan");
 
 const dotenv = require('dotenv');
 dotenv.config()
-const TEST_ALCHEMY_API_KEY = process.env.TEST_ALCHEMY_API_KEY;
-const MAIN_ALCHEMY_API_KEY = process.env.MAIN_ALCHEMY_API_KEY;
 
+const GOERLI_ALCHEMY_API_KEY = process.env.GOERLI_ALCHEMY_API_KEY;
 const GOERLI_PRIVATE_KEY = process.env.GOERLI_PRIVATE_KEY;
+const GOERLI_ETHERSCAN_API_KEY = process.env.GOERLI_ETHERSCAN_API_KEY;
+
+const RINKEBY_ALCHEMY_API_KEY = process.env.RINKEBY_ALCHEMY_API_KEY;
+const RINKEBY_PRIVATE_KEY = process.env.RINKEBY_PRIVATE_KEY;
+const RINKEBY_ETHERSCAN_API_KEY = process.env.RINKEBY_ETHERSCAN_API_KEY;
+
+const MAINNET_ALCHEMY_API_KEY = process.env.MAINNET_ALCHEMY_API_KEY;
 const MAINNET_PRIVATE_KEY = process.env.MAINNET_PRIVATE_KEY;
+const MAINNET_ETHERSCAN_API_KEY = process.env.MAINNET_ETHERSCAN_API_KEY;
 
 // This is a sample Hardhat task. To learn how to create your own go to
 // https://hardhat.org/guides/create-task.html
@@ -29,18 +36,23 @@ module.exports = {
   solidity: "0.8.15",
   networks: {
     goerli: {
-      url: `https://eth-goerli.alchemyapi.io/v2/${TEST_ALCHEMY_API_KEY}`,
+      url: `https://eth-goerli.alchemyapi.io/v2/${GOERLI_ALCHEMY_API_KEY}`,
       accounts: [GOERLI_PRIVATE_KEY],
     },
+    rinkeby: {
+      url: `https://eth-rinkeby.alchemyapi.io/v2/${RINKEBY_ALCHEMY_API_KEY}`,
+      accounts: [RINKEBY_PRIVATE_KEY],
+    },
     mainnet: {
-      url: `https://eth-mainnet.g.alchemyapi.io/v2/${MAIN_ALCHEMY_API_KEY}`,
+      url: `https://eth-mainnet.g.alchemyapi.io/v2/${MAINNET_ALCHEMY_API_KEY}`,
       accounts: [MAINNET_PRIVATE_KEY],
     }
   },
   etherscan: {
     apiKey: {
-      goerli: process.env.TEST_ETHERSCAN_API_KEY,
-      mainnet: process.env.MAIN_ETHERSCAN_API_KEY,
+      goerli: GOERLI_ETHERSCAN_API_KEY,
+      rinkeby: RINKEBY_ETHERSCAN_API_KEY,
+      mainnet: MAINNET_ETHERSCAN_API_KEY,
     }
   }
 };

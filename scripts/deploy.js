@@ -15,7 +15,7 @@ async function main() {
 
   // We get the contract to deploy
   const Sav3 = await hre.ethers.getContractFactory("Sav3");
-  const sav3 = await Sav3.deploy(100, 5000);
+  const sav3 = await Sav3.deploy(10, 5000);
 
   await sav3.deployed();
 

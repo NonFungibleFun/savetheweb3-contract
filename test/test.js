@@ -61,15 +61,15 @@ describe("Sav3", function () {
 
     await sav3.unpause();
 
-    await expect(sav3.connect(preSaleWhitelisted[1]).preSaleMint(3, tree.getHexProof(keccak256(preSaleWhitelisted[1].address)), {
+    await expect(sav3.connect(preSaleWhitelisted[1]).preSaleMint(6, tree.getHexProof(keccak256(preSaleWhitelisted[1].address)), {
       value: ethers.utils.parseUnits('25000000', 'wei'),
     })).to.be.revertedWith("reached max mint count for presale");
 
-    await expect(sav3.connect(preSaleWhitelisted[1]).preSaleMint(1, tree.getHexProof(keccak256(preSaleWhitelisted[1].address)), {
+    await expect(sav3.connect(preSaleWhitelisted[1]).preSaleMint(3, tree.getHexProof(keccak256(preSaleWhitelisted[1].address)), {
       value: ethers.utils.parseUnits('25000000', 'wei'),
     })).not.to.be.reverted
 
-    await expect(sav3.connect(preSaleWhitelisted[1]).preSaleMint(1, tree.getHexProof(keccak256(preSaleWhitelisted[1].address)), {
+    await expect(sav3.connect(preSaleWhitelisted[1]).preSaleMint(3, tree.getHexProof(keccak256(preSaleWhitelisted[1].address)), {
       value: ethers.utils.parseUnits('25000000', 'wei'),
     })).to.be.revertedWith("already minted");
   });
@@ -96,15 +96,15 @@ describe("Sav3", function () {
 
     await sav3.unpause();
 
-    await expect(sav3.connect(whitelisted[1]).whitelistMint(3, tree.getHexProof(keccak256(whitelisted[1].address)), {
+    await expect(sav3.connect(whitelisted[1]).whitelistMint(6, tree.getHexProof(keccak256(whitelisted[1].address)), {
       value: ethers.utils.parseUnits('25000000', 'wei'),
     })).to.be.revertedWith("reached max mint count for whitelist");
 
-    await expect(sav3.connect(whitelisted[1]).whitelistMint(1, tree.getHexProof(keccak256(whitelisted[1].address)), {
+    await expect(sav3.connect(whitelisted[1]).whitelistMint(3, tree.getHexProof(keccak256(whitelisted[1].address)), {
       value: ethers.utils.parseUnits('25000000', 'wei'),
     })).not.to.be.reverted
 
-    await expect(sav3.connect(whitelisted[1]).whitelistMint(1, tree.getHexProof(keccak256(whitelisted[1].address)), {
+    await expect(sav3.connect(whitelisted[1]).whitelistMint(3, tree.getHexProof(keccak256(whitelisted[1].address)), {
       value: ethers.utils.parseUnits('25000000', 'wei'),
     })).to.be.revertedWith("already minted");
   });
@@ -389,7 +389,7 @@ describe("Sav3", function () {
 
     await sav3.unpause();
     await startSale(sav3, 'setPublicSaleTime');
-    await sav3.setPreSalePrice(67_000_000_000_000_000n);
+    await sav3.setPublicPrice(67_000_000_000_000_000n);
     await sav3.setReservedQuantity(4999);
 
     await expect(sav3.connect(accounts[1]).publicMint(2, {

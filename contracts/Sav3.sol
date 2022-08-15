@@ -12,7 +12,6 @@ import "hardhat/console.sol";
 contract Sav3 is Ownable, ERC721A, ReentrancyGuard, Pausable {
 	uint256 public maxPerAddressDuringMint;
 	uint256 public immutable collectionSize;
-	uint256 public maxPerTransactionDuringMint;
 
 	uint256 public maxPreSaleMintCount;
 	uint256 public maxWhitelistMintCount;
@@ -49,9 +48,8 @@ contract Sav3 is Ownable, ERC721A, ReentrancyGuard, Pausable {
 	constructor(uint256 maxBatchSize_, uint256 collectionSize_) ERC721A("Save the Web3", "SAV3") {
 		maxPerAddressDuringMint = maxBatchSize_;
 		collectionSize = collectionSize_;
-		maxPerTransactionDuringMint = 10;
-		maxPreSaleMintCount = 2;
-		maxWhitelistMintCount = 2;
+		maxPreSaleMintCount = 5;
+		maxWhitelistMintCount = 5;
 		_pause();
 	}
 
@@ -86,15 +84,16 @@ contract Sav3 is Ownable, ERC721A, ReentrancyGuard, Pausable {
 	}
 
 	function publicMint(uint256 quantity) external payable callerIsUser whenNotPaused {
-		require(isPublicSaleOn(), "public sale has not started yet");
+		uint256 price = publicPrice * quantity;
+		require(price != 0 && isPublicSaleOn(), "public sale has not started yet");
 		require(
 			totalSupply() + quantity <= collectionSize - (reservedQuantity - usedReservedQuantity),
 			"reached max supply"
 		);
 		require(numberMinted(msg.sender) + quantity <= maxPerAddressDuringMint, "can not mint this many");
-		uint256 totalCost = publicPrice * quantity;
+
 		_safeMint(msg.sender, quantity);
-		refundIfOver(totalCost);
+		refundIfOver(price);
 	}
 
 	function refundIfOver(uint256 price) private {
@@ -183,10 +182,6 @@ contract Sav3 is Ownable, ERC721A, ReentrancyGuard, Pausable {
 		maxPerAddressDuringMint = maxPerAddressDuringMint_;
 	}
 
-	function setMaxPerTransactionDuringMint(uint256 maxPerTransactionDuringMint_) external onlyOwner {
-		maxPerTransactionDuringMint = maxPerTransactionDuringMint_;
-	}
-
 	function getPreSaleTime() public view returns (uint256, uint256) {
 		return (preSaleStartTime, preSaleEndTime);
 	}
@@ -215,10 +210,10 @@ contract Sav3 is Ownable, ERC721A, ReentrancyGuard, Pausable {
 	}
 
 	function setReservedQuantity(uint256 quantity) external onlyOwner {
-        require(usedReservedQuantity <= quantity, 'reserved quantity is greater than used quantity');
+		require(usedReservedQuantity <= quantity, "reserved quantity is greater than used quantity");
 		require(totalSupply() <= collectionSize - (quantity - usedReservedQuantity), "reached max supply");
 
-        reservedQuantity = quantity;
+		reservedQuantity = quantity;
 	}
 
 	function reservedMint(uint256 quantity, address addr) external onlyOwner {

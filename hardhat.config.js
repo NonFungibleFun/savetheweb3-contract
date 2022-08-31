@@ -39,20 +39,20 @@ module.exports = {
       // url: `https://eth-goerli.alchemyapi.io/v2/${GOERLI_ALCHEMY_API_KEY}`,
       // accounts: [GOERLI_PRIVATE_KEY],
     // },
-    rinkeby: {
-      url: `https://eth-rinkeby.alchemyapi.io/v2/${RINKEBY_ALCHEMY_API_KEY}`,
-      accounts: [RINKEBY_PRIVATE_KEY],
-    },
-    // mainnet: {
-      // url: `https://eth-mainnet.g.alchemyapi.io/v2/${MAINNET_ALCHEMY_API_KEY}`,
+    // rinkeby: {
+      // url: `https://eth-rinkeby.alchemyapi.io/v2/${RINKEBY_ALCHEMY_API_KEY}`,
+      // accounts: [RINKEBY_PRIVATE_KEY],
+    // },
+    mainnet: {
+      url: `https://eth-mainnet.g.alchemy.com/v2/${MAINNET_ALCHEMY_API_KEY}`,
       // accounts: [MAINNET_PRIVATE_KEY],
-    // }
+    }
   },
   etherscan: {
     apiKey: {
       // goerli: GOERLI_ETHERSCAN_API_KEY,
-      rinkeby: RINKEBY_ETHERSCAN_API_KEY,
-      // mainnet: MAINNET_ETHERSCAN_API_KEY,
+      // rinkeby: RINKEBY_ETHERSCAN_API_KEY,
+      mainnet: MAINNET_ETHERSCAN_API_KEY,
     }
   }
 };

@@ -6,7 +6,6 @@ import "erc721a/contracts/ERC721A.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
-import "hardhat/console.sol";
 
 contract SaveTheWeb3 is Ownable, ERC721A, ReentrancyGuard {
 	uint256 public immutable collectionSize;

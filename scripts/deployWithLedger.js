@@ -5,32 +5,20 @@
 // Runtime Environment's members available in the global scope.
 const ethProvider = require("eth-provider"); // eth-provider is a simple EIP-1193 provider
 
-// // Create a Frame connection
-// const ethProvider = require('eth-provider') // eth-provider is a simple EIP-1193 provider
-// const frame = ethProvider('frame') // Connect to Frame
-
-// // Use `getDeployTransaction` instead of `deploy` to return deployment data
-// const Greeter = await ethers.getContractFactory('Greeter')
-// const tx = await Greeter.getDeployTransaction()
-
-// // Set `tx.from` to current Frame account
-// tx.from = (await frame.request({ method: 'eth_requestAccounts' }))[0]
-
-// // Sign and send the transaction using Frame
-// await frame.request({ method: 'eth_sendTransaction', params: [tx] })
-
 async function main() {
   // Create a Frame connection
   
   const frame = ethProvider("frame"); // Connect to Frame
 
   // Use `getDeployTransaction` instead of `deploy` to return deployment data
-  const Greeter = await ethers.getContractFactory("SaveTheWeb3");
-  const tx = await Greeter.getDeployTransaction(5, 5000);
+  const Sav3 = await ethers.getContractFactory("SaveTheWeb3");
+  const tx = await Sav3.getDeployTransaction(5, 5000);
   // Set `tx.from` to current Frame account
   tx.from = (await frame.request({ method: "eth_requestAccounts" }))[0];
   // Sign and send the transaction using Frame
-  await frame.request({ method: "eth_sendTransaction", params: [tx] });
+  const response = await frame.request({ method: "eth_sendTransaction", params: [tx] });
+
+  console.log(JSON.stringify(response))
 
   // ledger connect
 
@@ -45,7 +33,7 @@ async function main() {
   // const ledger = await new LedgerSigner(hre.ethers.provider);
   // const Sav3 = await hre.ethers.getContractFactory("Sav3");
 
-  // console.log(ledger.address);
+  // console.log(ledger.address);0x6edb5f5090aa010cbcf6193b534d87361f46b092
 
   // const SignedSav3 = await Sav3.connect(ledger);
 
